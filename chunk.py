@@ -1,0 +1,27 @@
+with open("data/pt_data.txt", encoding="utf-8") as f:
+    lines = f.read().splitlines()
+
+max_chunk = 600 #chunk limit
+current_size = 0
+current_chunk = list()
+output_chunks = list()
+
+for line in lines:
+    if len(line) + current_size > max_chunk:
+        output_chunks.append("\n".join(current_chunk))
+        overlap = current_chunk[-1]
+        if len(overlap) + len(line) <= max_chunk:
+            current_chunk = [overlap, line]
+            current_size = len(overlap) + len(line)
+        else:
+            current_chunk = [line]
+            current_size = len(line)
+    else:
+        current_chunk.append(line)
+        current_size += len(line)
+output_chunks.append("\n".join(current_chunk))
+print(len(output_chunks))
+for chunk in output_chunks[:3]:
+    print(chunk)
+    print("-------------")
+    
