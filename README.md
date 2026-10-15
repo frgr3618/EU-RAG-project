@@ -59,7 +59,6 @@ The model runs on CPU. The first call after starting Ollama can take around 30 s
 
 ## Next steps
 
-- Use the Portuguese chunk boundaries for all four languages, so chunk N has the same content in every language.
-- Store each chunk with its language, chunk id and source URL.
+- Store each chunk with its text, language, chunk id and source URL.
 - Add embeddings, the vector store, and the retrieval step.
 - Later: build a small test set of questions and compare chunking methods.
