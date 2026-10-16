@@ -1,3 +1,5 @@
+import json
+
 #build a list of dicts, each corresponding to a chunk 
 #dict struct {"text" : chunk, "lang" : lang, "chunk_id" : lang_chunk, "source" : url}
 langs = ["pt", "en", "es", "it"]
@@ -30,4 +32,6 @@ for lang in langs:
     chunk_id = f"{lang}_{counter}"
     output_chunks.append({"text":"\n".join(current_chunk), "lang":lang, "chunk_id":chunk_id, "source":url})
 print(len(output_chunks))
+with open("/home/grassinf/EU-RAG-proj/data/chunks.json", "w", encoding="utf-8") as output_file:
+    json.dump(output_chunks, output_file, ensure_ascii=False, indent=2)
 
