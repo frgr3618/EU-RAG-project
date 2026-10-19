@@ -10,9 +10,11 @@ order = {"model": "bge-m3", "input": input_list}
 reply = requests.post(url, json=order)
 data = reply.json() #convert the JSON reply into dict
 
-#to measure closeness-> dot product -> multiply vectors
 """
-To make the dot products in code
+Measure closeness-> cosine similarity = dot(a, b) / (len(a)*len(b)), But since Ollama gives 
+normalised vectors (len 1), then dot product is enough.
+
+To make the dot products in code:
 """
 pt_en_dot = 0
 pt_pt_dot = 0
