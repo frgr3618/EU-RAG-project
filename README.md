@@ -15,8 +15,9 @@ Work in progress.
 | Split the text into chunks | `chunk.py` | Done |
 | Embeddings (BGE-M3) | `embed.py` | Done |
 | Manual search (dot product, top 3) | `search.py` | Done |
-| Vector store (Chroma) | | Next |
-| Prompt + answer with retrieved chunks | | Planned |
+| Vector store (Chroma): index the chunks | `index.py` | Done |
+| Query the vector store (top 3) | `query.py` | Done |
+| Prompt + answer with retrieved chunks | | Next |
 
 ## How it works so far
 
@@ -29,6 +30,10 @@ Work in progress.
 **embed.py** is a small test of the embedding model. It embeds a Portuguese question, an English sentence about delivery and a Portuguese sentence about returns, and compares them with the dot product (equal to cosine similarity, since the vectors are normalized). The English delivery sentence scored higher (0.63) than the Portuguese returns sentence (0.48), which shows the multilingual model matches on meaning rather than language.
 
 **search.py** loads the chunks, embeds all of them with BGE-M3 through Ollama in one request, embeds the question, scores every chunk by dot product and prints the top 3. For "qual é o tempo medio de entrega?" the top results contain the rule that the seller must deliver within 30 days.
+
+**index.py** stores the chunks in a Chroma vector database (`chroma_db/`, not tracked in git), so they are embedded once instead of on every search. Each chunk is saved with its id, text, BGE-M3 vector and metadata (language and source URL). The collection uses cosine distance instead of Chroma's default squared Euclidean distance, and is written with `upsert`, so running the script again updates existing chunks instead of duplicating them.
+
+**query.py** opens the stored collection, embeds only the question ("I never received my order") and asks Chroma for the 3 closest chunks, printing each chunk id and its distance.
 
 ## Setup
 
@@ -47,7 +52,7 @@ Create a virtual environment and install the packages:
 ```
 python3 -m venv .venv
 source .venv/bin/activate
-pip install requests beautifulsoup4 numpy
+pip install requests beautifulsoup4 numpy chromadb
 ```
 
 ## Usage
@@ -59,13 +64,15 @@ mkdir -p data
 python scrape.py
 python chunk.py
 python search.py
+python index.py
+python query.py
 python baseline.py
 ```
 
-Everything runs on CPU. The first call after starting Ollama can take around 30 seconds while a model loads, and embedding all chunks in `search.py` takes one to three minutes.
+Everything runs on CPU. The first call after starting Ollama can take around 30 seconds while a model loads, and embedding all chunks in `search.py` or `index.py` takes one to three minutes.
 
 ## Next steps
 
-- Store the chunk vectors in Chroma, so the chunks are embedded once instead of on every search, and use metadata to filter by language.
 - Build the prompt from the retrieved chunks and the question, and get the answer from Llama.
+- Use the language metadata to filter results by language.
 - Later: build a small test set of questions and compare chunking methods.
